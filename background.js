@@ -136,17 +136,23 @@ function validateResponseShape(data) {
     throw new Error("Backend returned an empty response");
   }
 
-  const isValidInterestingPoints =
-    Array.isArray(data.interesting_points) &&
-    data.interesting_points.length === 3 &&
-    data.interesting_points.every((item) => typeof item === "string");
+  const isValidExampleSentences =
+    Array.isArray(data.example_sentences) &&
+    data.example_sentences.length === 3 &&
+    data.example_sentences.every(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        typeof item.original === "string" &&
+        typeof item.translation === "string"
+    );
 
   if (
     typeof data.detected_source_language !== "string" ||
     typeof data.translation !== "string" ||
     typeof data.simple_explanation !== "string" ||
     typeof data.speakable_explanation !== "string" ||
-    !isValidInterestingPoints
+    !isValidExampleSentences
   ) {
     throw new Error("Backend returned JSON with an unexpected structure");
   }

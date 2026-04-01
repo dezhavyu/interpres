@@ -138,11 +138,31 @@
 
 .translator-list {
   margin: 0;
-  padding-left: 18px;
   display: grid;
   gap: 8px;
-  font-size: 14px;
+}
+
+.translator-example {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.translator-example-original,
+.translator-example-translation {
+  margin: 0;
   line-height: 1.5;
+}
+
+.translator-example-original {
+  font-size: 14px;
+  color: #152033;
+}
+
+.translator-example-translation {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
 }
 
 @media (max-width: 480px) {

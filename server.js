@@ -27,7 +27,7 @@ const responseSchema = {
   required: [
     "detected_source_language",
     "translation",
-    "interesting_points",
+    "example_sentences",
     "simple_explanation",
     "speakable_explanation"
   ],
@@ -38,12 +38,22 @@ const responseSchema = {
     translation: {
       type: "string"
     },
-    interesting_points: {
+    example_sentences: {
       type: "array",
       minItems: 3,
       maxItems: 3,
       items: {
-        type: "string"
+        type: "object",
+        additionalProperties: false,
+        required: ["original", "translation"],
+        properties: {
+          original: {
+            type: "string"
+          },
+          translation: {
+            type: "string"
+          }
+        }
       }
     },
     simple_explanation: {
@@ -90,12 +100,13 @@ app.post("/api/translate-explain", async (req, res) => {
     const response = await withTimeout(
       openai.responses.create({
         model: MODEL,
-        max_output_tokens: 350,
+        max_output_tokens: 500,
         instructions: [
           "You are a translation and explanation assistant.",
           "Determine the source language of the input text.",
           "Translate the text into the requested target language.",
-          "Write exactly 3 short, interesting, informative points about the meaning or context of the text.",
+          "Write exactly 3 short, interesting example sentences that naturally use the selected word or phrase in the source language.",
+          "For each example sentence, provide its translation in the requested target language.",
           "Explain the text simply in the requested explanation language.",
           "If the text is one word or a very short phrase, keep the explanation especially simple and concrete.",
           "Prepare a natural speakable explanation for browser text-to-speech in the explanation language.",
@@ -174,6 +185,9 @@ function buildPrompt({ text, targetLanguage, explanationLanguage }) {
     `Text: ${text}`,
     `Target language: ${targetLanguage}`,
     `Explanation language: ${explanationLanguage}`,
+    "Create 3 example sentences that use the selected text naturally.",
+    "Each example sentence must include the selected text or a natural inflected form of it.",
+    "For each example, return the original sentence and its translation into the target language.",
     "Return JSON only."
   ].join("\n");
 }
@@ -203,8 +217,11 @@ function validateModelPayload(payload) {
   const result = {
     detected_source_language: normalizeText(payload?.detected_source_language),
     translation: normalizeText(payload?.translation),
-    interesting_points: Array.isArray(payload?.interesting_points)
-      ? payload.interesting_points.map((item) => normalizeText(item))
+    example_sentences: Array.isArray(payload?.example_sentences)
+      ? payload.example_sentences.map((item) => ({
+          original: normalizeText(item?.original),
+          translation: normalizeText(item?.translation)
+        }))
       : [],
     simple_explanation: normalizeText(payload?.simple_explanation),
     speakable_explanation: normalizeText(payload?.speakable_explanation)
@@ -215,8 +232,10 @@ function validateModelPayload(payload) {
     result.translation &&
     result.simple_explanation &&
     result.speakable_explanation &&
-    result.interesting_points.length === 3 &&
-    result.interesting_points.every(Boolean);
+    result.example_sentences.length === 3 &&
+    result.example_sentences.every(
+      (item) => item.original && item.translation
+    );
 
   if (!isValid) {
     throw new Error("Model returned JSON with missing required fields.");

@@ -39,8 +39,8 @@
         </section>
 
         <section class="translator-section" data-section="interesting">
-          <h3 class="translator-title">Quick Insights</h3>
-          <ul class="translator-list" data-role="interesting-points"></ul>
+          <h3 class="translator-title">Example Sentences</h3>
+          <div class="translator-list" data-role="example-sentences"></div>
         </section>
 
         <section class="translator-section" data-section="explanation">
@@ -63,7 +63,7 @@
       explanationSection: shell.querySelector('[data-section="explanation"]'),
       translation: shell.querySelector('[data-role="translation"]'),
       sourceLanguage: shell.querySelector('[data-role="source-language"]'),
-      interestingPoints: shell.querySelector('[data-role="interesting-points"]'),
+      exampleSentences: shell.querySelector('[data-role="example-sentences"]'),
       explanation: shell.querySelector('[data-role="explanation"]')
     };
 
@@ -204,11 +204,21 @@
     refs.sourceLanguage.textContent = `Source language: ${data.detected_source_language || "Unknown"}`;
     refs.explanation.textContent = data.simple_explanation || "";
 
-    refs.interestingPoints.replaceChildren();
-    for (const point of Array.isArray(data.interesting_points) ? data.interesting_points : []) {
-      const listItem = document.createElement("li");
-      listItem.textContent = point;
-      refs.interestingPoints.appendChild(listItem);
+    refs.exampleSentences.replaceChildren();
+    for (const example of Array.isArray(data.example_sentences) ? data.example_sentences : []) {
+      const item = document.createElement("div");
+      item.className = "translator-example";
+
+      const original = document.createElement("p");
+      original.className = "translator-example-original";
+      original.textContent = example.original || "";
+
+      const translation = document.createElement("p");
+      translation.className = "translator-example-translation";
+      translation.textContent = example.translation || "";
+
+      item.append(original, translation);
+      refs.exampleSentences.appendChild(item);
     }
 
     showPopupAtRect(rect);
