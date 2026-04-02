@@ -1,27 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="settings-html-popup">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>interpres Settings</title>
+    <title>interpres</title>
     <link rel="stylesheet" href="settings.css" />
   </head>
-  <body class="settings-body">
-    <main class="settings-shell">
-      <section class="settings-card">
+  <body class="settings-body settings-body-popup">
+    <main class="settings-shell settings-shell-popup">
+      <section class="settings-card settings-card-popup">
         <div class="settings-glow"></div>
         <div class="settings-topbar">
           <div>
             <p class="settings-eyebrow">interpres</p>
-            <h1 class="settings-title">Translation Settings</h1>
+            <h1 class="settings-title">Quick Settings</h1>
           </div>
         </div>
 
-        <p class="settings-description">
-          Control the translation language and the explanation language used across the extension.
-        </p>
-
-        <form id="settings-form" class="settings-form">
+        <form id="settings-form" class="settings-form settings-form-popup">
           <section class="settings-panel">
             <div class="settings-panel-head">
               <h2 class="settings-panel-title">Target Language</h2>
@@ -80,15 +76,16 @@
             </div>
           </section>
 
-          <div class="settings-actions">
-            <button type="submit" class="settings-save">Save settings</button>
-            <div class="settings-status" id="status" aria-live="polite"></div>
+          <div class="settings-actions settings-actions-popup">
+            <button type="submit" class="settings-save">Save</button>
+            <a href="options.html" target="_blank" class="settings-link">Open full settings</a>
           </div>
+          <div class="settings-status settings-status-popup" id="status" aria-live="polite"></div>
         </form>
       </section>
     </main>
 
     <script src="settings-shared.js"></script>
-    <script src="options.js"></script>
+    <script src="popup.js"></script>
   </body>
 </html>

@@ -1,3 +1,3 @@
 document.addEventListener("DOMContentLoaded", () => {
-  window.initInterpresSettings({ mode: "page" });
+  window.initInterpresSettings({ mode: "popup" });
 });

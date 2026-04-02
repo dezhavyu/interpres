@@ -28,8 +28,7 @@ const responseSchema = {
     "detected_source_language",
     "translation",
     "example_sentences",
-    "simple_explanation",
-    "speakable_explanation"
+    "simple_explanation"
   ],
   properties: {
     detected_source_language: {
@@ -57,9 +56,6 @@ const responseSchema = {
       }
     },
     simple_explanation: {
-      type: "string"
-    },
-    speakable_explanation: {
       type: "string"
     }
   }
@@ -109,7 +105,6 @@ app.post("/api/translate-explain", async (req, res) => {
           "For each example sentence, provide its translation in the requested target language.",
           "Explain the text simply in the requested explanation language.",
           "If the text is one word or a very short phrase, keep the explanation especially simple and concrete.",
-          "Prepare a natural speakable explanation for browser text-to-speech in the explanation language.",
           "Return only valid JSON that matches the provided schema."
         ].join(" "),
         input: [
@@ -223,15 +218,13 @@ function validateModelPayload(payload) {
           translation: normalizeText(item?.translation)
         }))
       : [],
-    simple_explanation: normalizeText(payload?.simple_explanation),
-    speakable_explanation: normalizeText(payload?.speakable_explanation)
+    simple_explanation: normalizeText(payload?.simple_explanation)
   };
 
   const isValid =
     result.detected_source_language &&
     result.translation &&
     result.simple_explanation &&
-    result.speakable_explanation &&
     result.example_sentences.length === 3 &&
     result.example_sentences.every(
       (item) => item.original && item.translation

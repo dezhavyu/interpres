@@ -3,6 +3,12 @@
   "name": "interpres",
   "version": "0.1.0",
   "description": "Translates selected text and shows a compact explanation popup near the selection.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": ["storage", "contextMenus", "scripting", "activeTab"],
   "host_permissions": [
     "http://localhost:8787/*",
@@ -26,6 +32,11 @@
     }
   ],
   "action": {
-    "default_title": "interpres"
+    "default_title": "interpres",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    },
+    "default_popup": "popup.html"
   }
 }

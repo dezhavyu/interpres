@@ -6,7 +6,6 @@ const SETTINGS_VERSION = 3;
 const DEFAULT_SETTINGS = {
   targetLanguage: "English",
   explanationLanguage: "English",
-  autoSpeakExplanation: false,
   settingsVersion: SETTINGS_VERSION
 };
 
@@ -68,8 +67,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       type: "selection-translator:result",
       text,
       rect,
-      data,
-      autoSpeakExplanation: Boolean(settings.autoSpeakExplanation)
+      data
     });
   } catch (error) {
     if (!tab?.id) {
@@ -151,7 +149,6 @@ function validateResponseShape(data) {
     typeof data.detected_source_language !== "string" ||
     typeof data.translation !== "string" ||
     typeof data.simple_explanation !== "string" ||
-    typeof data.speakable_explanation !== "string" ||
     !isValidExampleSentences
   ) {
     throw new Error("Backend returned JSON with an unexpected structure");
@@ -206,7 +203,6 @@ async function migrateLegacySettingsIfNeeded(settings) {
   const targetLanguage = normalizeText(settings?.targetLanguage) || DEFAULT_SETTINGS.targetLanguage;
   const explanationLanguage =
     normalizeText(settings?.explanationLanguage) || targetLanguage || DEFAULT_SETTINGS.explanationLanguage;
-  const autoSpeakExplanation = Boolean(settings?.autoSpeakExplanation);
   const settingsVersion = Number(settings?.settingsVersion || 0);
 
   const shouldResetToEnglishDefaults = settingsVersion < SETTINGS_VERSION;
@@ -215,13 +211,11 @@ async function migrateLegacySettingsIfNeeded(settings) {
     ? {
         targetLanguage: "English",
         explanationLanguage: "English",
-        autoSpeakExplanation,
         settingsVersion: SETTINGS_VERSION
       }
     : {
         targetLanguage,
         explanationLanguage,
-        autoSpeakExplanation,
         settingsVersion: SETTINGS_VERSION
       };
 
