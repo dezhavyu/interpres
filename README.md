@@ -85,7 +85,7 @@ interpres/
 If you already have the folder locally, skip this.
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/dezhavyu/interpres
 cd Translator
 ```
 
