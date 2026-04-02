@@ -1,6 +1,9 @@
-# interpres
+<h1 align="center">interpres</h1>
+<p align="center">Translate words with context, not just literally.</p>
 
-![interpres logo](./icons/icon128.png)
+<p align="center">
+  <img src="./icons/icon128.png" alt="interpres logo"/>
+</p>
 
 `interpres` is a small Chrome extension that helps you translate selected text on any page and immediately see how the word or phrase works in real sentences.
 
