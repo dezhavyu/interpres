@@ -86,7 +86,6 @@ If you already have the folder locally, skip this.
 
 ```bash
 git clone https://github.com/dezhavyu/interpres
-cd Translator
 ```
 
 ### 2. Install backend dependencies
