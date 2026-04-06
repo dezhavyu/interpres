@@ -59,6 +59,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const settings = await getSettings();
     const data = await handleTranslateExplain({
       text,
+      translationOnly: countWords(text) > 5,
       targetLanguage: settings.targetLanguage,
       explanationLanguage: settings.explanationLanguage
     });
@@ -95,6 +96,7 @@ async function createContextMenu() {
 async function handleTranslateExplain(payload) {
   const requestBody = {
     text: normalizeText(payload?.text),
+    translationOnly: Boolean(payload?.translationOnly),
     targetLanguage: normalizeText(payload?.targetLanguage) || "English",
     explanationLanguage:
       normalizeText(payload?.explanationLanguage) ||
@@ -136,7 +138,7 @@ function validateResponseShape(data) {
 
   const isValidExampleSentences =
     Array.isArray(data.example_sentences) &&
-    data.example_sentences.length === 3 &&
+    data.example_sentences.length <= 3 &&
     data.example_sentences.every(
       (item) =>
         item &&
@@ -157,6 +159,12 @@ function validateResponseShape(data) {
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function countWords(text) {
+  return normalizeText(text)
+    .split(/\s+/)
+    .filter(Boolean).length;
 }
 
 function getStorageItems(defaults) {

@@ -39,7 +39,7 @@ const responseSchema = {
     },
     example_sentences: {
       type: "array",
-      minItems: 3,
+      minItems: 0,
       maxItems: 3,
       items: {
         type: "object",
@@ -74,6 +74,7 @@ app.get("/health", (_req, res) => {
 
 app.post("/api/translate-explain", async (req, res) => {
   const text = normalizeText(req.body?.text);
+  const translationOnly = Boolean(req.body?.translationOnly);
   const targetLanguage = normalizeText(req.body?.targetLanguage) || "English";
   const explanationLanguage =
     normalizeText(req.body?.explanationLanguage) || targetLanguage || "English";
@@ -101,10 +102,12 @@ app.post("/api/translate-explain", async (req, res) => {
           "You are a translation and explanation assistant.",
           "Determine the source language of the input text.",
           "Translate the text into the requested target language.",
-          "Write exactly 3 short, interesting example sentences that naturally use the selected word or phrase in the source language.",
-          "For each example sentence, provide its translation in the requested target language.",
-          "Explain the text simply in the requested explanation language.",
-          "If the text is one word or a very short phrase, keep the explanation especially simple and concrete.",
+          "If translationOnly is true, return only the translation and detected source language.",
+          "If translationOnly is true, return example_sentences as an empty array and simple_explanation as an empty string.",
+          "If translationOnly is false, write exactly 3 short, interesting example sentences that naturally use the selected word or phrase in the source language.",
+          "If translationOnly is false, for each example sentence provide its translation in the requested target language.",
+          "If translationOnly is false, explain the text simply in the requested explanation language.",
+          "If translationOnly is false and the text is one word or a very short phrase, keep the explanation especially simple and concrete.",
           "Return only valid JSON that matches the provided schema."
         ].join(" "),
         input: [
@@ -113,7 +116,7 @@ app.post("/api/translate-explain", async (req, res) => {
             content: [
               {
                 type: "input_text",
-                text: buildPrompt({ text, targetLanguage, explanationLanguage })
+                text: buildPrompt({ text, targetLanguage, explanationLanguage, translationOnly })
               }
             ]
           }
@@ -175,14 +178,16 @@ app.listen(PORT, () => {
   console.log(`Translation backend listening on http://localhost:${PORT}`);
 });
 
-function buildPrompt({ text, targetLanguage, explanationLanguage }) {
+function buildPrompt({ text, targetLanguage, explanationLanguage, translationOnly }) {
   return [
     `Text: ${text}`,
+    `Translation only: ${translationOnly ? "true" : "false"}`,
     `Target language: ${targetLanguage}`,
     `Explanation language: ${explanationLanguage}`,
-    "Create 3 example sentences that use the selected text naturally.",
-    "Each example sentence must include the selected text or a natural inflected form of it.",
-    "For each example, return the original sentence and its translation into the target language.",
+    "If translation only is true, do not generate examples or explanation.",
+    "If translation only is false, create 3 example sentences that use the selected text naturally.",
+    "If translation only is false, each example sentence must include the selected text or a natural inflected form of it.",
+    "If translation only is false, for each example return the original sentence and its translation into the target language.",
     "Return JSON only."
   ].join("\n");
 }
@@ -224,8 +229,7 @@ function validateModelPayload(payload) {
   const isValid =
     result.detected_source_language &&
     result.translation &&
-    result.simple_explanation &&
-    result.example_sentences.length === 3 &&
+    result.example_sentences.length <= 3 &&
     result.example_sentences.every(
       (item) => item.original && item.translation
     );

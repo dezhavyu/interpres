@@ -192,20 +192,24 @@
   }
 
   function renderResult(data, rect) {
+    const examples = Array.isArray(data.example_sentences) ? data.example_sentences : [];
+    const hasExamples = examples.length > 0;
+    const hasExplanation = Boolean((data.simple_explanation || "").trim());
+
     refs.status.textContent = "";
     refs.status.dataset.visible = "false";
     refs.status.dataset.variant = "loading";
 
     refs.translationSection.style.display = "";
-    refs.interestingSection.style.display = "";
-    refs.explanationSection.style.display = "";
+    refs.interestingSection.style.display = hasExamples ? "" : "none";
+    refs.explanationSection.style.display = hasExplanation ? "" : "none";
 
     refs.translation.textContent = data.translation || "";
     refs.sourceLanguage.textContent = `Source language: ${data.detected_source_language || "Unknown"}`;
     refs.explanation.textContent = data.simple_explanation || "";
 
     refs.exampleSentences.replaceChildren();
-    for (const example of Array.isArray(data.example_sentences) ? data.example_sentences : []) {
+    for (const example of examples) {
       const item = document.createElement("div");
       item.className = "translator-example";
 
