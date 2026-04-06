@@ -4,8 +4,7 @@ const MAX_SELECTION_LENGTH = 300;
 const BACKEND_TIMEOUT_MS = 25000;
 const SETTINGS_VERSION = 3;
 const DEFAULT_SETTINGS = {
-  targetLanguage: "English",
-  explanationLanguage: "English",
+  translateLanguage: "English",
   settingsVersion: SETTINGS_VERSION
 };
 
@@ -60,8 +59,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     const data = await handleTranslateExplain({
       text,
       translationOnly: countWords(text) > 5,
-      targetLanguage: settings.targetLanguage,
-      explanationLanguage: settings.explanationLanguage
+      targetLanguage: settings.translateLanguage,
+      explanationLanguage: settings.translateLanguage
     });
 
     await notifyTab(tab.id, {
@@ -208,29 +207,30 @@ async function ensureContentScript(tabId) {
 }
 
 async function migrateLegacySettingsIfNeeded(settings) {
-  const targetLanguage = normalizeText(settings?.targetLanguage) || DEFAULT_SETTINGS.targetLanguage;
-  const explanationLanguage =
-    normalizeText(settings?.explanationLanguage) || targetLanguage || DEFAULT_SETTINGS.explanationLanguage;
+  const legacyTargetLanguage = normalizeText(settings?.targetLanguage);
+  const legacyExplanationLanguage = normalizeText(settings?.explanationLanguage);
+  const translateLanguage =
+    normalizeText(settings?.translateLanguage) ||
+    legacyTargetLanguage ||
+    legacyExplanationLanguage ||
+    DEFAULT_SETTINGS.translateLanguage;
   const settingsVersion = Number(settings?.settingsVersion || 0);
 
   const shouldResetToEnglishDefaults = settingsVersion < SETTINGS_VERSION;
 
   const normalizedSettings = shouldResetToEnglishDefaults
     ? {
-        targetLanguage: "English",
-        explanationLanguage: "English",
+        translateLanguage: "English",
         settingsVersion: SETTINGS_VERSION
       }
     : {
-        targetLanguage,
-        explanationLanguage,
+        translateLanguage,
         settingsVersion: SETTINGS_VERSION
       };
 
   if (
     settingsVersion !== normalizedSettings.settingsVersion ||
-    targetLanguage !== normalizedSettings.targetLanguage ||
-    explanationLanguage !== normalizedSettings.explanationLanguage
+    translateLanguage !== normalizedSettings.translateLanguage
   ) {
     await setStorageItems(normalizedSettings);
   }

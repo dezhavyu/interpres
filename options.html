@@ -18,46 +18,17 @@
         </div>
 
         <p class="settings-description">
-          Control the translation language and the explanation language used across the extension.
+          Control the language used for translation and explanation across the extension.
         </p>
 
         <form id="settings-form" class="settings-form">
           <section class="settings-panel">
             <div class="settings-panel-head">
-              <h2 class="settings-panel-title">Target Language</h2>
+              <h2 class="settings-panel-title">Translate Language</h2>
             </div>
-            <div class="settings-picker" data-setting="targetLanguage">
+            <div class="settings-picker" data-setting="translateLanguage">
               <button
-                id="targetLanguageTrigger"
-                type="button"
-                class="settings-picker-trigger"
-                aria-expanded="false"
-                aria-haspopup="listbox"
-              >
-                <span class="settings-picker-value">English</span>
-                <span class="settings-picker-icon">⌄</span>
-              </button>
-              <div class="settings-picker-popover" hidden>
-                <div class="settings-picker-search-wrap">
-                  <input
-                    class="settings-picker-search"
-                    type="search"
-                    placeholder="Search language"
-                    autocomplete="off"
-                  />
-                </div>
-                <div class="settings-picker-list" role="listbox"></div>
-              </div>
-            </div>
-          </section>
-
-          <section class="settings-panel">
-            <div class="settings-panel-head">
-              <h2 class="settings-panel-title">Explanation Language</h2>
-            </div>
-            <div class="settings-picker" data-setting="explanationLanguage">
-              <button
-                id="explanationLanguageTrigger"
+                id="translateLanguageTrigger"
                 type="button"
                 class="settings-picker-trigger"
                 aria-expanded="false"

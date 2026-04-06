@@ -55,18 +55,16 @@
     "Vietnamese"
   ];
   const DEFAULT_SETTINGS = {
-    targetLanguage: "English",
-    explanationLanguage: "English",
+    translateLanguage: "English",
     settingsVersion: SETTINGS_VERSION
   };
 
   function initInterpresSettings({ mode }) {
     const form = document.getElementById("settings-form");
     const statusElement = document.getElementById("status");
-    const targetLanguagePicker = createLanguagePicker("targetLanguage");
-    const explanationLanguagePicker = createLanguagePicker("explanationLanguage");
+    const translateLanguagePicker = createLanguagePicker("translateLanguage");
 
-    if (!form || !statusElement || !targetLanguagePicker || !explanationLanguagePicker) {
+    if (!form || !statusElement || !translateLanguagePicker) {
       return;
     }
 
@@ -78,31 +76,24 @@
     async function restoreSettings() {
       const settings = await getStorageItems(DEFAULT_SETTINGS);
       const migratedSettings = await migrateLegacySettingsIfNeeded(settings);
-      const targetLanguage =
-        normalizeText(migratedSettings.targetLanguage) || DEFAULT_SETTINGS.targetLanguage;
-      const explanationLanguage =
-        normalizeText(migratedSettings.explanationLanguage) ||
-        targetLanguage ||
-        DEFAULT_SETTINGS.explanationLanguage;
+      const translateLanguage =
+        normalizeText(migratedSettings.translateLanguage) || DEFAULT_SETTINGS.translateLanguage;
 
-      targetLanguagePicker.setValue(targetLanguage);
-      explanationLanguagePicker.setValue(explanationLanguage);
+      translateLanguagePicker.setValue(translateLanguage);
     }
 
     async function handleSubmit(event) {
       event.preventDefault();
 
-      const targetLanguage = targetLanguagePicker.getValue() || DEFAULT_SETTINGS.targetLanguage;
-      const explanationLanguage = explanationLanguagePicker.getValue() || targetLanguage;
+      const translateLanguage =
+        translateLanguagePicker.getValue() || DEFAULT_SETTINGS.translateLanguage;
 
       await setStorageItems({
-        targetLanguage,
-        explanationLanguage,
+        translateLanguage,
         settingsVersion: SETTINGS_VERSION
       });
 
-      targetLanguagePicker.setValue(targetLanguage);
-      explanationLanguagePicker.setValue(explanationLanguage);
+      translateLanguagePicker.setValue(translateLanguage);
 
       statusElement.textContent = mode === "popup" ? "Saved" : "Settings saved";
       window.setTimeout(() => {
@@ -111,8 +102,7 @@
     }
 
     function handleDocumentPointerDown(event) {
-      targetLanguagePicker.handleOuterPointer(event);
-      explanationLanguagePicker.handleOuterPointer(event);
+      translateLanguagePicker.handleOuterPointer(event);
     }
 
     function handleDocumentKeydown(event) {
@@ -120,8 +110,7 @@
         return;
       }
 
-      targetLanguagePicker.close();
-      explanationLanguagePicker.close();
+      translateLanguagePicker.close();
     }
   }
 
@@ -142,29 +131,30 @@
   }
 
   async function migrateLegacySettingsIfNeeded(settings) {
-    const targetLanguage = normalizeText(settings?.targetLanguage) || DEFAULT_SETTINGS.targetLanguage;
-    const explanationLanguage =
-      normalizeText(settings?.explanationLanguage) || targetLanguage || DEFAULT_SETTINGS.explanationLanguage;
+    const legacyTargetLanguage = normalizeText(settings?.targetLanguage);
+    const legacyExplanationLanguage = normalizeText(settings?.explanationLanguage);
+    const translateLanguage =
+      normalizeText(settings?.translateLanguage) ||
+      legacyTargetLanguage ||
+      legacyExplanationLanguage ||
+      DEFAULT_SETTINGS.translateLanguage;
     const settingsVersion = Number(settings?.settingsVersion || 0);
 
     const shouldResetToEnglishDefaults = settingsVersion < SETTINGS_VERSION;
 
     const normalizedSettings = shouldResetToEnglishDefaults
       ? {
-          targetLanguage: "English",
-          explanationLanguage: "English",
+          translateLanguage: "English",
           settingsVersion: SETTINGS_VERSION
         }
       : {
-          targetLanguage,
-          explanationLanguage,
+          translateLanguage,
           settingsVersion: SETTINGS_VERSION
         };
 
     if (
       settingsVersion !== normalizedSettings.settingsVersion ||
-      targetLanguage !== normalizedSettings.targetLanguage ||
-      explanationLanguage !== normalizedSettings.explanationLanguage
+      translateLanguage !== normalizedSettings.translateLanguage
     ) {
       await setStorageItems(normalizedSettings);
     }
